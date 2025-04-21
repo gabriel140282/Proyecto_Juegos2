@@ -7,53 +7,69 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.JOptionPane;
 import org.example.disco.model.HanoiModel;
 import org.example.disco.view.HanoiView;
 
+/**
+ * Controller MVC para el juego de Torres de Hanoi con niveles crecientes.
+ */
 public class HanoiController {
     private HanoiModel model;
     private HanoiView view;
-    private JTextField nField;
+    private int level;
+    private JTextField levelField;
     private JButton resetBtn;
 
     /**
-     * Monta todo el MVC de Hanoi (vista + controles) en el panel que le pases.
+     * Monta el juego en el panel contenedor y gestiona niveles.
      */
     public HanoiController(JPanel container) {
-        // 1) inicializa modelo y vista con n=5 por defecto
-        model = new HanoiModel(5);
-        view = new HanoiView(5);
+        // Nivel inicial
+        level = 1;
+        model = new HanoiModel(level);
+        view = new HanoiView(level);
 
-        // 2) Layout del panel contenedor
+        // Layout principal
         container.setLayout(new BorderLayout());
         container.add(view, BorderLayout.CENTER);
 
-        // 3) Panel de controles (reset)
+        // Panel de controles (nivel + reset)
         JPanel top = new JPanel();
-        top.add(new JLabel("Discos:"));
-        nField = new JTextField("5", 3);
+        top.add(new JLabel("Nivel:"));
+        levelField = new JTextField(String.valueOf(level), 3);
+        levelField.setEditable(false);
         resetBtn = new JButton("Reset");
-        top.add(nField);
+        top.add(levelField);
         top.add(resetBtn);
         container.add(top, BorderLayout.NORTH);
 
-        // 4) Conectar el listener de movimientos
+        // Listener de movimientos de discos
         view.setMoveListener((from, to) -> {
             if (model.moveDisk(from, to)) {
                 view.setPegs(model.getPegs());
+                // Si todos los discos están en la tercera torre, completar nivel
+                if (model.getPegs().get(2).size() == level) {
+                    JOptionPane.showMessageDialog(container,
+                            "¡Nivel " + level + " completado! Avanzando al siguiente.");
+                    level++;
+                    levelField.setText(String.valueOf(level));
+                    model.reset(level);
+                    view.setPegs(model.getPegs());
+                }
             } else {
                 Toolkit.getDefaultToolkit().beep();
             }
         });
 
-        // 5) Conectar el botón Reset
+        // Botón Reset manual
         resetBtn.addActionListener(e -> {
-            int n = Integer.parseInt(nField.getText());
-            model.reset(n);
+            level = Integer.parseInt(levelField.getText());
+            model.reset(level);
             view.setPegs(model.getPegs());
         });
 
-        // 6) Inicializar estado de la vista
-        resetBtn.doClick();
+        // Mostrar estado inicial
+        view.setPegs(model.getPegs());
     }
 }
