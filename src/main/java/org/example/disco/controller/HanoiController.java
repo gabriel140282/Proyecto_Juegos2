@@ -2,12 +2,7 @@ package org.example.disco.controller;
 
 import java.awt.BorderLayout;
 import java.awt.Toolkit;
-import java.awt.event.ActionListener;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import org.example.disco.model.HanoiModel;
 import org.example.disco.view.HanoiView;
 
@@ -28,7 +23,7 @@ public class HanoiController {
         // Nivel inicial
         level = 1;
         model = new HanoiModel(level);
-        view = new HanoiView(level);
+        view  = new HanoiView(level);
 
         // Layout principal
         container.setLayout(new BorderLayout());
@@ -58,13 +53,17 @@ public class HanoiController {
                     view.setPegs(model.getPegs());
                 }
             } else {
+                // Beep y diálogo de error
                 Toolkit.getDefaultToolkit().beep();
+                JOptionPane.showMessageDialog(container,
+                        "No se puede colocar un disco grande encima de uno pequeño.",
+                        "Movimiento inválido",
+                        JOptionPane.WARNING_MESSAGE);
             }
         });
 
         // Botón Reset manual
         resetBtn.addActionListener(e -> {
-            level = Integer.parseInt(levelField.getText());
             model.reset(level);
             view.setPegs(model.getPegs());
         });
