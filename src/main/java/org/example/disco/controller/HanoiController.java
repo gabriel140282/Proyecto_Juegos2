@@ -7,7 +7,8 @@ import org.example.disco.model.HanoiModel;
 import org.example.disco.view.HanoiView;
 
 /**
- * Controller MVC para el juego de Torres de Hanoi con niveles crecientes.
+ * Controller MVC para el juego de Torres de Hanoi con niveles crecientes
+ * y arrastre con revert en caso de error.
  */
 public class HanoiController {
     private HanoiModel model;
@@ -42,8 +43,9 @@ public class HanoiController {
         // Listener de movimientos de discos
         view.setMoveListener((from, to) -> {
             if (model.moveDisk(from, to)) {
+                // Movimiento válido: actualiza vista
                 view.setPegs(model.getPegs());
-                // Si todos los discos están en la tercera torre, completar nivel
+                // Comprueba fin de nivel
                 if (model.getPegs().get(2).size() == level) {
                     JOptionPane.showMessageDialog(container,
                             "¡Nivel " + level + " completado! Avanzando al siguiente.");
@@ -53,12 +55,14 @@ public class HanoiController {
                     view.setPegs(model.getPegs());
                 }
             } else {
-                // Beep y diálogo de error
+                // Movimiento inválido: beep, mensaje y revert
                 Toolkit.getDefaultToolkit().beep();
                 JOptionPane.showMessageDialog(container,
                         "No se puede colocar un disco grande encima de uno pequeño.",
                         "Movimiento inválido",
                         JOptionPane.WARNING_MESSAGE);
+                // Restaura la vista al estado actual del modelo
+                view.setPegs(model.getPegs());
             }
         });
 
