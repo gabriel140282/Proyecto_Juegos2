@@ -21,21 +21,23 @@ public class QueensModel {
     }
 
     private void backtrack(int[] pos, int row) {
-        if (row==n) {
+        if (row == n) {
             solutions.add(pos.clone());
             return;
         }
-        for (int col=0; col<n; col++) {
+        for (int col = 0; col < n; col++) {
             if (isSafe(pos, row, col)) {
                 pos[row] = col;
-                backtrack(pos, row+1);
+                backtrack(pos, row + 1);
             }
         }
     }
 
     private boolean isSafe(int[] pos, int row, int col) {
-        for (int i=0;i<row;i++) {
-            if (pos[i]==col || Math.abs(pos[i]-col)==Math.abs(i-row)) return false;
+        for (int i = 0; i < row; i++) {
+            if (pos[i] == col || Math.abs(pos[i] - col) == Math.abs(i - row)) {
+                return false;
+            }
         }
         return true;
     }
