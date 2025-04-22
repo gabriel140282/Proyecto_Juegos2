@@ -53,6 +53,15 @@ public class KnightView extends JPanel {
         private int step;
         private Timer timer;
         private static final int CELL = 20;
+        private Image horseImg;
+
+        public DrawPanel() {
+            try {
+                horseImg = new ImageIcon(getClass().getResource("/images/caballo.png")).getImage();
+            } catch (Exception e) {
+                horseImg = null;
+            }
+        }
 
         public void setPath(List<int[]> p) {
             this.path = p;
@@ -70,7 +79,7 @@ public class KnightView extends JPanel {
             revalidate();
 
             if (timer != null && timer.isRunning()) timer.stop();
-            timer = new Timer(50, e -> {
+            timer = new Timer(300, e -> {
                 step++;
                 if (step >= path.size()) {
                     timer.stop();
@@ -104,8 +113,14 @@ public class KnightView extends JPanel {
 
             if (step < path.size()) {
                 int[] p = path.get(step);
-                g2.setColor(Color.RED);
-                g2.fillOval(p[1] * CELL + 4, p[0] * CELL + 4, CELL - 8, CELL - 8);
+                int x = p[1] * CELL;
+                int y = p[0] * CELL;
+                if (horseImg != null) {
+                    g2.drawImage(horseImg, x, y, CELL, CELL, this);
+                } else {
+                    g2.setColor(Color.RED);
+                    g2.fillOval(x + 4, y + 4, CELL - 8, CELL - 8);
+                }
             }
         }
     }

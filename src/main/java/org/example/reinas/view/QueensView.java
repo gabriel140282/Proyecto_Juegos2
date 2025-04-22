@@ -65,6 +65,15 @@ public class QueensView extends JPanel {
     private static class BoardPanel extends JPanel {
         private int[] solution;
         private int n;
+        private Image queenImg;
+
+        public BoardPanel() {
+            try {
+                queenImg = new ImageIcon(getClass().getResource("/images/reina.png")).getImage();
+            } catch (Exception e) {
+                queenImg = null;
+            }
+        }
 
         public void setSolution(int[] solution) {
             this.solution = solution;
@@ -79,11 +88,13 @@ public class QueensView extends JPanel {
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             if (solution == null) return;
+
             Graphics2D g2 = (Graphics2D) g;
             int w = getWidth();
             int h = getHeight();
             int cell = Math.min(w, h) / n;
-            // Dibujar celdas
+
+            // Dibujar tablero
             for (int r = 0; r < n; r++) {
                 for (int c = 0; c < n; c++) {
                     boolean light = (r + c) % 2 == 0;
@@ -91,13 +102,18 @@ public class QueensView extends JPanel {
                     g2.fillRect(c * cell, r * cell, cell, cell);
                 }
             }
+
             // Dibujar reinas
-            g2.setColor(Color.RED);
             for (int r = 0; r < n; r++) {
                 int c = solution[r];
                 int x = c * cell;
                 int y = r * cell;
-                g2.fillOval(x + cell/8, y + cell/8, cell * 3/4, cell * 3/4);
+                if (queenImg != null) {
+                    g2.drawImage(queenImg, x, y, cell, cell, this);
+                } else {
+                    g2.setColor(Color.RED);
+                    g2.fillOval(x + cell / 8, y + cell / 8, cell * 3 / 4, cell * 3 / 4);
+                }
             }
         }
     }
