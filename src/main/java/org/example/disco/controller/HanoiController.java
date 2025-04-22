@@ -1,88 +1,85 @@
 package org.example.disco.controller;
 
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
-import java.util.*;
 import javax.swing.Timer;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-
 import org.example.disco.model.HanoiModel;
 import org.example.disco.view.HanoiView;
 
 public class HanoiController {
-    private HanoiModel model;
-    private HanoiView view;
-    private int level;
-    private JTextField levelField;
-    private JButton resetBtn, resolverBtn;
+    private HanoiModel modelo;
+    private HanoiView vista;
+    private int nivel;
+    private JTextField campo_nivel;
+    private JButton boton_reset, boton_resolver;
 
-    public HanoiController(JPanel container) {
-        level = 1;
-        model = new HanoiModel(level);
-        view  = new HanoiView(level);
+    public HanoiController(JPanel contenedor) {
+        nivel = 1;
+        modelo = new HanoiModel(nivel);
+        vista  = new HanoiView(nivel);
 
-        container.setLayout(new BorderLayout());
-        container.add(view, BorderLayout.CENTER);
+        contenedor.setLayout(new BorderLayout());
+        contenedor.add(vista, BorderLayout.CENTER);
 
         // Panel de controles
         JPanel top = new JPanel();
         top.add(new JLabel("Nivel:"));
-        levelField = new JTextField(String.valueOf(level), 3);
-        levelField.setEditable(true); // Ahora editable
-        top.add(levelField);
+        campo_nivel = new JTextField(String.valueOf(nivel), 3);
+        campo_nivel.setEditable(true); // Ahora editable
+        top.add(campo_nivel);
 
-        resetBtn = new JButton("Reset");
-        resolverBtn = new JButton("Resolver");
-        top.add(resetBtn);
-        top.add(resolverBtn);
-        container.add(top, BorderLayout.NORTH);
+        boton_reset = new JButton("Reset o Jugar");
+        boton_resolver = new JButton("Resolver");
+        top.add(boton_reset);
+        top.add(boton_resolver);
+        contenedor.add(top, BorderLayout.NORTH);
 
         // Movimiento manual
-        view.setMoveListener((from, to) -> {
-            if (model.moveDisk(from, to)) {
-                view.setPegs(model.getPegs());
-                if (model.getPegs().get(2).size() == level) {
-                    JOptionPane.showMessageDialog(container,
-                            "¡Nivel " + level + " completado! Avanzando al siguiente.");
-                    level++;
-                    levelField.setText(String.valueOf(level));
-                    model.reset(level);
-                    view.setPegs(model.getPegs());
+        vista.setMoveListener((from, to) -> {
+            if (modelo.moveDisk(from, to)) {
+                vista.setPegs(modelo.getPegs());
+                if (modelo.getPegs().get(2).size() == nivel) {
+                    JOptionPane.showMessageDialog(contenedor,
+                            "¡Nivel " + nivel + " completado! Avanzando al siguiente.");
+                    nivel++;
+                    campo_nivel.setText(String.valueOf(nivel));
+                    modelo.reset(nivel);
+                    vista.setPegs(modelo.getPegs());
                 }
             } else {
                 Toolkit.getDefaultToolkit().beep();
-                JOptionPane.showMessageDialog(container,
+                JOptionPane.showMessageDialog(contenedor,
                         "No se puede colocar un disco grande encima de uno pequeño.",
                         "Movimiento inválido",
                         JOptionPane.WARNING_MESSAGE);
-                view.setPegs(model.getPegs());
+                vista.setPegs(modelo.getPegs());
             }
         });
 
         // Reset manual
-        resetBtn.addActionListener(e -> {
+        boton_reset.addActionListener(e -> {
             try {
-                level = Integer.parseInt(levelField.getText());
-                model.reset(level);
-                view.setPegs(model.getPegs());
+                nivel = Integer.parseInt(campo_nivel.getText());
+                modelo.reset(nivel);
+                vista.setPegs(modelo.getPegs());
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(container, "Nivel inválido.");
+                JOptionPane.showMessageDialog(contenedor, "Nivel inválido.");
             }
         });
 
         // Resolver automáticamente
-        resolverBtn.addActionListener(e -> {
+        boton_resolver.addActionListener(e -> {
             try {
-                level = Integer.parseInt(levelField.getText());
-                model.reset(level);
-                view.setPegs(model.getPegs());
-                solveHanoiAnimated(level, 0, 2, 1); // origen, destino, auxiliar
+                nivel = Integer.parseInt(campo_nivel.getText());
+                modelo.reset(nivel);
+                vista.setPegs(modelo.getPegs());
+                solveHanoiAnimated(nivel, 0, 2, 1); // origen, destino, auxiliar
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(container, "Nivel inválido.");
+                JOptionPane.showMessageDialog(contenedor, "Nivel inválido.");
             }
         });
     }
@@ -101,19 +98,16 @@ public class HanoiController {
         timer.addActionListener(e -> {
             if (it.hasNext()) {
                 int[] move = it.next();
-                model.moveDisk(move[0], move[1]);
-                view.setPegs(model.getPegs());
+                modelo.moveDisk(move[0], move[1]);
+                vista.setPegs(modelo.getPegs());
             } else {
                 ((Timer) e.getSource()).stop();
-                JOptionPane.showMessageDialog(view, "¡Solución completada!");
+                JOptionPane.showMessageDialog(vista, "¡Solución completada!");
             }
         });
         timer.start();
     }
 
-    /**
-     * Algoritmo recursivo que genera los movimientos necesarios para resolver Hanoi.
-     */
     private void generateMoves(int n, int from, int to, int aux, List<int[]> moves) {
         if (n == 1) {
             moves.add(new int[]{from, to});

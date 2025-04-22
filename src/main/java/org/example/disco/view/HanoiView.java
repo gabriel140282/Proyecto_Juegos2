@@ -6,12 +6,9 @@ import java.awt.event.*;
 import java.util.List;
 import java.util.Stack;
 
-/**
- * Vista interactiva de Torres de Hanoi con arrastre de discos.
- */
 public class HanoiView extends JPanel implements MouseListener, MouseMotionListener {
     private List<Stack<Integer>> pegs;
-    private int numDisks;
+    private int numero_discos;
     private MoveListener moveListener;
 
     // Estado de arrastre
@@ -28,7 +25,7 @@ public class HanoiView extends JPanel implements MouseListener, MouseMotionListe
     };
 
     public HanoiView(int n) {
-        this.numDisks = n;
+        this.numero_discos = n;
         addMouseListener(this);
         addMouseMotionListener(this);
     }
@@ -36,7 +33,7 @@ public class HanoiView extends JPanel implements MouseListener, MouseMotionListe
     public void setPegs(List<Stack<Integer>> pegs) {
         this.pegs = pegs;
         // recalcula numDisks para el tamaño del panel
-        this.numDisks = pegs.get(0).size() + pegs.get(1).size() + pegs.get(2).size();
+        this.numero_discos = pegs.get(0).size() + pegs.get(1).size() + pegs.get(2).size();
         repaint();
     }
 
@@ -59,12 +56,12 @@ public class HanoiView extends JPanel implements MouseListener, MouseMotionListe
         for (int i = 0; i < 3; i++) {
             int x = pegX[i];
             g2.setColor(new Color(0x5D4037));
-            g2.fillRect(x-5, baseY - numDisks*diskH - 20, 10, numDisks*diskH + 20);
+            g2.fillRect(x-5, baseY - numero_discos*diskH - 20, 10, numero_discos*diskH + 20);
 
             Stack<Integer> stack = pegs.get(i);
             for (int j = 0; j < stack.size(); j++) {
                 int d = stack.get(j);
-                int wDisk = d * spacing / (numDisks + 1);
+                int wDisk = d * spacing / (numero_discos + 1);
                 int dx = x - wDisk/2;
                 int dy = baseY - diskH*(j+1);
                 Color c = COLORS[(d-1) % COLORS.length];
@@ -79,7 +76,7 @@ public class HanoiView extends JPanel implements MouseListener, MouseMotionListe
         if (dragging) {
             Graphics2D g3 = (Graphics2D) g;
             int spacing2 = w / 4;
-            int wDisk = dragDiskSize * spacing2 / (numDisks + 1);
+            int wDisk = dragDiskSize * spacing2 / (numero_discos + 1);
             int dy = 20;
             int dx = dragX - wDisk/2;
             int dyPos = dragY - dy/2;
