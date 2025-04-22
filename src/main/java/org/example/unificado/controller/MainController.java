@@ -24,7 +24,7 @@ public class MainController {
     private void init() {
         // --- Caballo MVC clásico con model+view ---
         KnightView kv = new KnightView();
-        new KnightController(new KnightModel(27, 13, 13), kv);
+        new KnightController(new KnightModel(8,0,0), kv);
         view.addTab("Caballo", kv);
 
         // --- Hanoi MVC montado en un JPanel ---
