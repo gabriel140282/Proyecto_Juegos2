@@ -3,26 +3,23 @@ package org.example.reinas.model;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Modelo N-Reinas: genera soluciones con backtracking.
- */
 public class QueensModel {
     private int n;
-    private List<int[]> solutions;
+    private List<int[]> soluciones;
 
     public QueensModel(int n) {
         this.n = n;
     }
 
     public List<int[]> solve() {
-        solutions = new ArrayList<>();
+        soluciones = new ArrayList<>();
         backtrack(new int[n], 0);
-        return solutions;
+        return soluciones;
     }
 
     private void backtrack(int[] pos, int row) {
         if (row == n) {
-            solutions.add(pos.clone());
+            soluciones.add(pos.clone());
             return;
         }
         for (int col = 0; col < n; col++) {

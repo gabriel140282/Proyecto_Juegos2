@@ -3,16 +3,12 @@ package org.example.reinas.view;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.util.Arrays;
 
-/**
- * Vista gráfica de N-Reinas con tablero interactivo.
- */
 public class QueensView extends JPanel {
     private JTextField nField;
-    private JButton solveBtn;
-    private JButton prevBtn;
-    private JButton nextBtn;
+    private JButton boton_resolver;
+    private JButton boton_anterior;
+    private JButton boton_siguiente;
     private BoardPanel boardPanel;
 
     public QueensView() {
@@ -20,15 +16,15 @@ public class QueensView extends JPanel {
         JPanel top = new JPanel();
         top.add(new JLabel("N:"));
         nField = new JTextField("8", 3);
-        solveBtn = new JButton("Resolver");
-        prevBtn = new JButton("< Anterior");
-        nextBtn = new JButton("Siguiente >");
-        prevBtn.setEnabled(false);
-        nextBtn.setEnabled(false);
+        boton_resolver = new JButton("Resolver");
+        boton_anterior = new JButton("< Anterior");
+        boton_siguiente = new JButton("Siguiente >");
+        boton_anterior.setEnabled(false);
+        boton_siguiente.setEnabled(false);
         top.add(nField);
-        top.add(solveBtn);
-        top.add(prevBtn);
-        top.add(nextBtn);
+        top.add(boton_resolver);
+        top.add(boton_anterior);
+        top.add(boton_siguiente);
         add(top, BorderLayout.NORTH);
 
         boardPanel = new BoardPanel();
@@ -44,24 +40,23 @@ public class QueensView extends JPanel {
     }
 
     public void addSolveListener(ActionListener l) {
-        solveBtn.addActionListener(l);
+        boton_resolver.addActionListener(l);
     }
 
     public void addPrevListener(ActionListener l) {
-        prevBtn.addActionListener(l);
+        boton_anterior.addActionListener(l);
     }
 
     public void addNextListener(ActionListener l) {
-        nextBtn.addActionListener(l);
+        boton_siguiente.addActionListener(l);
     }
 
     public void showSolution(int[] solution, int index, int total) {
         boardPanel.setSolution(solution);
-        prevBtn.setEnabled(index > 0);
-        nextBtn.setEnabled(index < total - 1);
+        boton_anterior.setEnabled(index > 0);
+        boton_siguiente.setEnabled(index < total - 1);
     }
 
-    // Panel interno para dibujar el tablero y las reinas
     private static class BoardPanel extends JPanel {
         private int[] solution;
         private int n;
