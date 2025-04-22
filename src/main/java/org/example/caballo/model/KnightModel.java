@@ -3,9 +3,6 @@ package org.example.caballo.model;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Modelo para el Tour del Caballo: Warnsdorff + Backtracking
- */
 public class KnightModel {
     private int d;
     private int startX, startY;
