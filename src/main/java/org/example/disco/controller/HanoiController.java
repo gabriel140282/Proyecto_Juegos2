@@ -39,7 +39,7 @@ public class HanoiController {
         JPanel top = new JPanel();
         top.add(new JLabel("Nivel:"));
         campo_nivel = new JTextField(String.valueOf(nivel), 3);
-        campo_nivel.setEditable(true); // Ahora editable
+        campo_nivel.setEditable(true);
         top.add(campo_nivel);
 
         boton_reset = new JButton("Reset o Jugar");
@@ -52,6 +52,7 @@ public class HanoiController {
         vista.setMoveListener((from, to) -> {
             if (modelo.moveDisk(from, to)) {
                 vista.setPegs(modelo.getPegs());
+                vista.logMovimiento("Movido manualmente de " + from + " a " + to);
                 if (modelo.getPegs().get(2).size() == nivel) {
                     JOptionPane.showMessageDialog(contenedor,
                             "¡Nivel " + nivel + " completado! Avanzando al siguiente.");
@@ -59,6 +60,7 @@ public class HanoiController {
                     campo_nivel.setText(String.valueOf(nivel));
                     modelo.reset(nivel);
                     vista.setPegs(modelo.getPegs());
+                    vista.logMovimiento("Reiniciado a nivel " + nivel);
                 }
             } else {
                 Toolkit.getDefaultToolkit().beep();
@@ -76,6 +78,7 @@ public class HanoiController {
                 nivel = Integer.parseInt(campo_nivel.getText());
                 modelo.reset(nivel);
                 vista.setPegs(modelo.getPegs());
+                vista.logMovimiento("Tablero reiniciado con nivel " + nivel);
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(contenedor, "Nivel inválido.");
             }
@@ -87,7 +90,8 @@ public class HanoiController {
                 nivel = Integer.parseInt(campo_nivel.getText());
                 modelo.reset(nivel);
                 vista.setPegs(modelo.getPegs());
-                solveHanoiAnimated(nivel, 0, 2, 1); // origen, destino, auxiliar
+                vista.logMovimiento("Resolviendo automáticamente el nivel " + nivel + "...");
+                solveHanoiAnimated(nivel, 0, 2, 1);
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(contenedor, "Nivel inválido.");
             }
@@ -109,9 +113,11 @@ public class HanoiController {
                 int[] move = it.next();
                 modelo.moveDisk(move[0], move[1]);
                 vista.setPegs(modelo.getPegs());
+                vista.logMovimiento("Automático: mover de " + move[0] + " a " + move[1]);
             } else {
                 ((Timer) e.getSource()).stop();
                 JOptionPane.showMessageDialog(vista, "¡Solución completada!");
+                vista.logMovimiento("✅ Solución finalizada.");
 
                 // Guardar resultado en la base de datos
                 try {
@@ -137,4 +143,3 @@ public class HanoiController {
         }
     }
 }
-
