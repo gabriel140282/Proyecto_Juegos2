@@ -8,7 +8,7 @@ import java.util.List;
 public class KnightView extends JPanel {
     private JTextField dimField;
     private JButton startBtn;
-    private JLabel statusLabel;        // NUEVO: etiqueta para mostrar el estado
+    private JLabel statusLabel;
     private DrawPanel drawPanel;
 
     public KnightView() {
@@ -22,7 +22,7 @@ public class KnightView extends JPanel {
         startBtn = new JButton("Iniciar Tour");
         top.add(startBtn);
 
-        statusLabel = new JLabel(" ");   // NUEVO: etiqueta de estado vacía inicialmente
+        statusLabel = new JLabel(" ");
         top.add(statusLabel);
 
         add(top, BorderLayout.NORTH);
@@ -44,15 +44,13 @@ public class KnightView extends JPanel {
     }
 
     public void setStatus(String msg) {
-        statusLabel.setText(msg);  // NUEVO: método para actualizar el mensaje
+        statusLabel.setText(msg);
     }
 
-    // Panel interno para dibujar el tour
     private class DrawPanel extends JPanel {
         private List<int[]> path;
         private int step;
         private Timer timer;
-        private static final int CELL = 20;
         private Image horseImg;
 
         public DrawPanel() {
@@ -66,17 +64,13 @@ public class KnightView extends JPanel {
         public void setPath(List<int[]> p) {
             this.path = p;
             this.step = 0;
+            revalidate();
+            repaint();
 
             if (p == null || p.isEmpty()) {
                 setStatus("No se encontró un tour.");
-                repaint();
                 return;
             }
-
-            int size = p.get(0)[0] > p.get(0)[1] ? p.get(0)[0] : p.get(0)[1];
-            size = Math.max(size, 10);
-            setPreferredSize(new Dimension(CELL * size, CELL * size));
-            revalidate();
 
             if (timer != null && timer.isRunning()) timer.stop();
             timer = new Timer(300, e -> {
@@ -94,32 +88,44 @@ public class KnightView extends JPanel {
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             if (path == null) return;
-            Graphics2D g2 = (Graphics2D) g;
 
+            Graphics2D g2 = (Graphics2D) g;
             int d = (int) Math.sqrt(path.size());
-            for (int r = 0; r < d; r++)
+
+            int cellWidth = getWidth() / d;
+            int cellHeight = getHeight() / d;
+            int cellSize = Math.min(cellWidth, cellHeight);
+
+            // Dibujar tablero
+            for (int r = 0; r < d; r++) {
                 for (int c = 0; c < d; c++) {
                     g2.setColor((r + c) % 2 == 0 ? Color.LIGHT_GRAY : Color.GRAY);
-                    g2.fillRect(c * CELL, r * CELL, CELL, CELL);
+                    g2.fillRect(c * cellSize, r * cellSize, cellSize, cellSize);
                 }
+            }
 
+            // Dibujar el camino
             g2.setColor(Color.BLUE);
             g2.setStroke(new BasicStroke(2));
             for (int i = 1; i <= step && i < path.size(); i++) {
-                int[] a = path.get(i - 1), b = path.get(i);
-                g2.drawLine(a[1] * CELL + CELL / 2, a[0] * CELL + CELL / 2,
-                        b[1] * CELL + CELL / 2, b[0] * CELL + CELL / 2);
+                int[] a = path.get(i - 1);
+                int[] b = path.get(i);
+                g2.drawLine(
+                        a[1] * cellSize + cellSize / 2, a[0] * cellSize + cellSize / 2,
+                        b[1] * cellSize + cellSize / 2, b[0] * cellSize + cellSize / 2
+                );
             }
 
+            // Dibujar el caballo
             if (step < path.size()) {
                 int[] p = path.get(step);
-                int x = p[1] * CELL;
-                int y = p[0] * CELL;
+                int x = p[1] * cellSize;
+                int y = p[0] * cellSize;
                 if (horseImg != null) {
-                    g2.drawImage(horseImg, x, y, CELL, CELL, this);
+                    g2.drawImage(horseImg, x, y, cellSize, cellSize, this);
                 } else {
                     g2.setColor(Color.RED);
-                    g2.fillOval(x + 4, y + 4, CELL - 8, CELL - 8);
+                    g2.fillOval(x + 4, y + 4, cellSize - 8, cellSize - 8);
                 }
             }
         }
