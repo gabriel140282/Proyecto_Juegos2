@@ -10,10 +10,12 @@ public class KnightView extends JPanel {
     private JButton startBtn;
     private JLabel statusLabel;
     private DrawPanel drawPanel;
+    private JTextArea moveLogArea; // ✅ Área para registrar movimientos
 
     public KnightView() {
         setLayout(new BorderLayout());
 
+        // Panel superior de controles
         JPanel top = new JPanel(new FlowLayout(FlowLayout.LEFT));
         top.add(new JLabel("Dimensión: "));
         dimField = new JTextField("27", 3);
@@ -27,8 +29,21 @@ public class KnightView extends JPanel {
 
         add(top, BorderLayout.NORTH);
 
+        // Panel central con tablero + registro lateral
+        JPanel centerPanel = new JPanel(new BorderLayout());
+
         drawPanel = new DrawPanel();
-        add(new JScrollPane(drawPanel), BorderLayout.CENTER);
+        centerPanel.add(drawPanel, BorderLayout.CENTER);
+
+        // ✅ Panel de registro a la derecha
+        moveLogArea = new JTextArea(20, 20);
+        moveLogArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(moveLogArea);
+        scrollPane.setBorder(BorderFactory.createTitledBorder("Movimientos"));
+
+        centerPanel.add(scrollPane, BorderLayout.EAST);
+
+        add(centerPanel, BorderLayout.CENTER);
     }
 
     public void addStartListener(ActionListener l) {
@@ -47,7 +62,12 @@ public class KnightView extends JPanel {
         statusLabel.setText(msg);
     }
 
-    // Panel interno para dibujar el tour
+    // ✅ Método para añadir movimientos al registro
+    private void logMove(int step, int row, int col) {
+        moveLogArea.append("Paso " + step + ": (" + row + ", " + col + ")\n");
+        moveLogArea.setCaretPosition(moveLogArea.getDocument().getLength());
+    }
+
     private class DrawPanel extends JPanel {
         private List<int[]> path;
         private int step;
@@ -65,6 +85,7 @@ public class KnightView extends JPanel {
         public void setPath(List<int[]> p) {
             this.path = p;
             this.step = 0;
+            moveLogArea.setText(""); // ✅ limpiar registro anterior
             revalidate();
             repaint();
 
@@ -75,6 +96,11 @@ public class KnightView extends JPanel {
 
             if (timer != null && timer.isRunning()) timer.stop();
             timer = new Timer(300, e -> {
+                if (step < path.size()) {
+                    int[] pos = path.get(step);
+                    logMove(step + 1, pos[0], pos[1]); // ✅ log en movimiento
+                }
+
                 step++;
                 if (step >= path.size()) {
                     timer.stop();
@@ -97,12 +123,10 @@ public class KnightView extends JPanel {
             int cellHeight = getHeight() / d;
             int cellSize = Math.min(cellWidth, cellHeight);
 
-            // Calcular offset para centrar
             int boardSize = cellSize * d;
             int offsetX = (getWidth() - boardSize) / 2;
             int offsetY = (getHeight() - boardSize) / 2;
 
-            // Dibujar tablero
             for (int r = 0; r < d; r++) {
                 for (int c = 0; c < d; c++) {
                     g2.setColor((r + c) % 2 == 0 ? Color.LIGHT_GRAY : Color.GRAY);
@@ -110,7 +134,6 @@ public class KnightView extends JPanel {
                 }
             }
 
-            // Dibujar camino
             g2.setColor(Color.BLUE);
             g2.setStroke(new BasicStroke(2));
             for (int i = 1; i <= step && i < path.size(); i++) {
@@ -122,7 +145,6 @@ public class KnightView extends JPanel {
                 );
             }
 
-            // Dibujar caballo
             if (step < path.size()) {
                 int[] p = path.get(step);
                 int x = offsetX + p[1] * cellSize;
