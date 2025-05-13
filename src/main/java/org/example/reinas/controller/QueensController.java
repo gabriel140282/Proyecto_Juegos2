@@ -22,7 +22,7 @@ public class QueensController {
         this.vista = vista;
 
         try {
-            db = new DBManager(); // Inicializar conexión con BD
+            db = new DBManager();
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Error al conectar a la base de datos.");
@@ -42,8 +42,8 @@ public class QueensController {
 
                 if (!soluciones.isEmpty()) {
                     vista.showSolution(soluciones.get(0), 0, soluciones.size());
+                    vista.logSolucion("N = " + n + ": " + soluciones.size() + " soluciones encontradas.");
 
-                    // Guardar resultado en la base de datos
                     try {
                         if (db != null) {
                             db.resultado_reinas_guardado(n, soluciones.size());
@@ -54,6 +54,7 @@ public class QueensController {
                     }
                 } else {
                     JOptionPane.showMessageDialog(null, "No se encontraron soluciones.");
+                    vista.logSolucion("N = " + n + ": 0 soluciones.");
                 }
             }
         });
@@ -64,6 +65,7 @@ public class QueensController {
                 if (IndiceActual > 0) {
                     IndiceActual--;
                     vista.showSolution(soluciones.get(IndiceActual), IndiceActual, soluciones.size());
+                    vista.logSolucion("Mostrando solución #" + (IndiceActual + 1));
                 }
             }
         });
@@ -74,6 +76,7 @@ public class QueensController {
                 if (IndiceActual < soluciones.size() - 1) {
                     IndiceActual++;
                     vista.showSolution(soluciones.get(IndiceActual), IndiceActual, soluciones.size());
+                    vista.logSolucion("Mostrando solución #" + (IndiceActual + 1));
                 }
             }
         });

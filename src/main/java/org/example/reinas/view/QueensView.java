@@ -10,9 +10,12 @@ public class QueensView extends JPanel {
     private JButton boton_anterior;
     private JButton boton_siguiente;
     private BoardPanel boardPanel;
+    private JTextArea logArea; // ✅ Registro lateral
 
     public QueensView() {
         setLayout(new BorderLayout());
+
+        // Panel superior
         JPanel top = new JPanel();
         top.add(new JLabel("N:"));
         nField = new JTextField("8", 3);
@@ -27,8 +30,16 @@ public class QueensView extends JPanel {
         top.add(boton_siguiente);
         add(top, BorderLayout.NORTH);
 
+        // Panel del tablero
         boardPanel = new BoardPanel();
         add(boardPanel, BorderLayout.CENTER);
+
+        // ✅ Registro lateral derecho
+        logArea = new JTextArea(20, 20);
+        logArea.setEditable(false);
+        JScrollPane scroll = new JScrollPane(logArea);
+        scroll.setBorder(BorderFactory.createTitledBorder("Registro de soluciones"));
+        add(scroll, BorderLayout.EAST);
     }
 
     public int getN() {
@@ -55,6 +66,12 @@ public class QueensView extends JPanel {
         boardPanel.setSolution(solution);
         boton_anterior.setEnabled(index > 0);
         boton_siguiente.setEnabled(index < total - 1);
+    }
+
+    // ✅ Método para añadir entradas al registro
+    public void logSolucion(String texto) {
+        logArea.append(texto + "\n");
+        logArea.setCaretPosition(logArea.getDocument().getLength());
     }
 
     private static class BoardPanel extends JPanel {
