@@ -4,9 +4,9 @@ import java.sql.*;
 
 public class DBManager {
     private static final String URL  =
-            "jdbc:mysql://localhost:3306/juegos?useSSL=false&serverTimezone=UTC";
+            "jdbc:mysql://localhost:3306/proyecto_juegos?useSSL=false&serverTimezone=UTC";
     private static final String USER = "root";
-    private static final String PASS = "";
+    private static final String PASS = "rootroot";
 
     private Connection conn;
 
