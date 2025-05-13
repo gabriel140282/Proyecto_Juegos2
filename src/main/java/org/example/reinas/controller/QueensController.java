@@ -2,8 +2,12 @@ package org.example.reinas.controller;
 
 import org.example.reinas.model.QueensModel;
 import org.example.reinas.view.QueensView;
+import org.example.unificado.db.DBManager;
+
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.util.List;
 
 public class QueensController {
@@ -11,10 +15,19 @@ public class QueensController {
     private QueensView vista;
     private List<int[]> soluciones;
     private int IndiceActual;
+    private DBManager db;
 
     public QueensController(QueensModel modelo, QueensView vista) {
         this.modelo = modelo;
         this.vista = vista;
+
+        try {
+            db = new DBManager(); // Inicializar conexión con BD
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error al conectar a la base de datos.");
+        }
+
         inicializar_acciones();
     }
 
@@ -26,11 +39,25 @@ public class QueensController {
                 modelo = new QueensModel(n);
                 soluciones = modelo.solve();
                 IndiceActual = 0;
+
                 if (!soluciones.isEmpty()) {
                     vista.showSolution(soluciones.get(0), 0, soluciones.size());
+
+                    // Guardar resultado en la base de datos
+                    try {
+                        if (db != null) {
+                            db.resultado_reinas_guardado(n, soluciones.size());
+                        }
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(null, "Error al guardar resultado de Reinas.");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "No se encontraron soluciones.");
                 }
             }
         });
+
         vista.addPrevListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -40,6 +67,7 @@ public class QueensController {
                 }
             }
         });
+
         vista.addNextListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

@@ -9,6 +9,8 @@ import java.util.Iterator;
 
 import org.example.disco.model.HanoiModel;
 import org.example.disco.view.HanoiView;
+import org.example.unificado.db.DBManager;
+import java.sql.SQLException;
 
 public class HanoiController {
     private HanoiModel modelo;
@@ -16,11 +18,19 @@ public class HanoiController {
     private int nivel;
     private JTextField campo_nivel;
     private JButton boton_reset, boton_resolver;
+    private DBManager db;
 
     public HanoiController(JPanel contenedor) {
         nivel = 1;
         modelo = new HanoiModel(nivel);
         vista  = new HanoiView(nivel);
+
+        try {
+            db = new DBManager(); // conexión a base de datos
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(contenedor, "Error al conectar a la base de datos.");
+        }
 
         contenedor.setLayout(new BorderLayout());
         contenedor.add(vista, BorderLayout.CENTER);
@@ -88,8 +98,7 @@ public class HanoiController {
      * Resuelve el juego paso a paso visualmente.
      */
     private void solveHanoiAnimated(int n, int from, int to, int aux) {
-        // ✅ Se declara correctamente con tipo explícito
-        List<int[]> moves = new ArrayList<int[]>();
+        List<int[]> moves = new ArrayList<>();
         generateMoves(n, from, to, aux, moves);
 
         Timer timer = new Timer(500, null);
@@ -103,6 +112,16 @@ public class HanoiController {
             } else {
                 ((Timer) e.getSource()).stop();
                 JOptionPane.showMessageDialog(vista, "¡Solución completada!");
+
+                // Guardar resultado en la base de datos
+                try {
+                    if (db != null) {
+                        db.resultado_hanoi_guardado(n, moves.size());
+                    }
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(vista, "Error al guardar el resultado en la base de datos.");
+                }
             }
         });
         timer.start();
@@ -118,3 +137,4 @@ public class HanoiController {
         }
     }
 }
+
