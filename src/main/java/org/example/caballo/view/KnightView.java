@@ -47,6 +47,7 @@ public class KnightView extends JPanel {
         statusLabel.setText(msg);
     }
 
+    // Panel interno para dibujar el tour
     private class DrawPanel extends JPanel {
         private List<int[]> path;
         private int step;
@@ -96,31 +97,36 @@ public class KnightView extends JPanel {
             int cellHeight = getHeight() / d;
             int cellSize = Math.min(cellWidth, cellHeight);
 
+            // Calcular offset para centrar
+            int boardSize = cellSize * d;
+            int offsetX = (getWidth() - boardSize) / 2;
+            int offsetY = (getHeight() - boardSize) / 2;
+
             // Dibujar tablero
             for (int r = 0; r < d; r++) {
                 for (int c = 0; c < d; c++) {
                     g2.setColor((r + c) % 2 == 0 ? Color.LIGHT_GRAY : Color.GRAY);
-                    g2.fillRect(c * cellSize, r * cellSize, cellSize, cellSize);
+                    g2.fillRect(offsetX + c * cellSize, offsetY + r * cellSize, cellSize, cellSize);
                 }
             }
 
-            // Dibujar el camino
+            // Dibujar camino
             g2.setColor(Color.BLUE);
             g2.setStroke(new BasicStroke(2));
             for (int i = 1; i <= step && i < path.size(); i++) {
                 int[] a = path.get(i - 1);
                 int[] b = path.get(i);
                 g2.drawLine(
-                        a[1] * cellSize + cellSize / 2, a[0] * cellSize + cellSize / 2,
-                        b[1] * cellSize + cellSize / 2, b[0] * cellSize + cellSize / 2
+                        offsetX + a[1] * cellSize + cellSize / 2, offsetY + a[0] * cellSize + cellSize / 2,
+                        offsetX + b[1] * cellSize + cellSize / 2, offsetY + b[0] * cellSize + cellSize / 2
                 );
             }
 
-            // Dibujar el caballo
+            // Dibujar caballo
             if (step < path.size()) {
                 int[] p = path.get(step);
-                int x = p[1] * cellSize;
-                int y = p[0] * cellSize;
+                int x = offsetX + p[1] * cellSize;
+                int y = offsetY + p[0] * cellSize;
                 if (horseImg != null) {
                     g2.drawImage(horseImg, x, y, cellSize, cellSize, this);
                 } else {
